@@ -11,3 +11,4 @@ git+https://gitea.eco.tsi-dev.otc-service.com/infra/otc-metadata-rework.git#egg=
 setuptools
 gitpython
 otc-api-ref
+
