@@ -137,7 +137,9 @@ Show Consumption (FOCUS 1.1)
 This API streams your consumption data aligned to the `FOCUS 1.1
 <https://focus.finops.org/>`__ (FinOps Open Cost and Usage Specification)
 column names at daily granularity. The same filters as the daily
-consumption endpoint are supported.
+consumption endpoint are supported, except ``hour``: FOCUS rows are daily
+aggregates, so an ``hour`` filter is rejected with ``422`` instead of
+silently returning an empty result.
 
 The response is returned as a string (NDJSON), with each line
 representing a valid JSON object. Data is streamed in batches of 1,000
