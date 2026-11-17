@@ -101,8 +101,12 @@ API
 ---
 
 Most functionality of the Financial Dashboard is also available via
-an REST HTTP endpoint for integration in other applications. Please
-refer to the `Financial Dashboard API Reference
-<https://docs.otc.t-systems.com/enterprise-dashboard/api-ref/>`__.
+an REST HTTP endpoint for integration in other applications. API keys
+are created in the Financial Dashboard web UI
+(https://financial-dashboard.otc-service.com) under **Configuration**
+(gear icon) > **API Keys** with an Admin user. Please refer to the
+`Financial Dashboard API Reference
+<https://docs.otc.t-systems.com/enterprise-dashboard/api-ref/>`__ for
+details.
 
 
