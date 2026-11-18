@@ -101,8 +101,19 @@ API
 ---
 
 Most functionality of the Financial Dashboard is also available via
-an REST HTTP endpoint for integration in other applications. Please
-refer to the `Financial Dashboard API Reference
-<https://docs.otc.t-systems.com/enterprise-dashboard/api-ref/>`__.
+an REST HTTP endpoint for integration in other applications. Grafana
+recommends service account tokens instead of API keys.
+
+In the Financial Dashboard web UI at
+https://financial-dashboard.otc-service.com, sign in with an Admin
+user and open **Configuration** (the gear icon):
+
+- **Service accounts** (recommended): create a service account with
+  the **Admin** role and add a token to it.
+- **API Keys**: create a key with the security level “Admin”.
+
+Please refer to the `Financial Dashboard API Reference
+<https://docs.otc.t-systems.com/enterprise-dashboard/api-ref/>`__ for
+details.
 
 

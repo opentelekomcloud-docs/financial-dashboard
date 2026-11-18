@@ -32,7 +32,8 @@ The following user groups are available in an organization:
 |                                   | -  Add and edit organization       |
 |                                   |    users and teams.                |
 |                                   |                                    |
-|                                   | -  Create API keys.                |
+|                                   | -  Create API keys and service     |
+|                                   |    accounts.                       |
 +-----------------------------------+------------------------------------+
 | Editor                            | -  Can create and modify           |
 |                                   |    dashboards and alert rules.     |
