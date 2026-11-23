@@ -139,10 +139,27 @@ This API streams your consumption data aligned to the `FOCUS 1.1
 column names at daily granularity. The same filters as the daily
 consumption endpoint are supported.
 
-The response is returned as a string (NDJSON), with each line
-representing a valid JSON object. Data is streamed in batches of 1,000
-records. You'll need to decode each line and parse it into JSON format
-on your end.
+The response format is selected with the ``format`` query parameter:
+
+.. list-table::
+   :widths: 18 30 52
+   :header-rows: 1
+
+   * - ``format``
+     - Content type
+     - Description
+   * - ``ndjson``
+     - ``application/x-ndjson``
+     - Default; one JSON object per line.
+   * - ``json``
+     - ``application/json``
+     - A single JSON array of objects.
+   * - ``csv``
+     - ``text/csv``
+     - CSV with a header row; nested values are JSON strings and
+       ``null`` values are empty cells.
+
+Data is streamed in batches of 1,000 records.
 
 Please ensure you create an API Key either through the Financial
 Dashboard UI or via the Grafana API directly.
@@ -171,6 +188,7 @@ Request
    - consumption_type: consumption_type
    - contract: contract
    - date: date
+   - format: format
    - month: month
    - product: product
    - product_description: product_description
@@ -185,7 +203,7 @@ Request
 Curl Example
 ------------
 
-Example request using curl with query parameters and headers:
+Example requests using curl with query parameters and headers:
 
 .. literalinclude:: examples/consumption-focus-get-curl
    :language: bash
@@ -193,8 +211,7 @@ Example request using curl with query parameters and headers:
 Response Parameters
 -------------------
 
-Each response line contains one charge with the following FOCUS 1.1
-fields:
+Each charge has the following FOCUS 1.1 fields:
 
 .. list-table::
    :widths: 25 12 63
@@ -211,9 +228,9 @@ fields:
      - number
      - Billed cost of the charge in the billing currency (EUR).
    * - BillingAccountId
-     - integer
+     - string
      - Identifier of the billing (payer) account the contract belongs
-       to.
+       to, returned as a string.
    * - BillingAccountName
      - string
      - Name of the billing (payer) account the contract belongs to.
@@ -226,19 +243,21 @@ fields:
      - Billing currency. Fixed value ``EUR``.
    * - BillingPeriodEnd
      - string
-     - End of the billing period covered by the charge. Exclusive.
-       Currently describes the daily period (consumption day + 1 day).
+     - Exclusive end of the billing period covered by the charge. This
+       is the start of the calendar month following the consumption
+       month.
    * - BillingPeriodStart
      - string
-     - Start of the billing period covered by the charge (the
-       consumption day).
+     - Inclusive start of the billing period covered by the charge. This
+       is the start of the calendar month containing the consumption
+       date.
    * - CapacityReservationId
      - string
      - Resource identifier for reserved package (``RE``) charges;
        ``null`` otherwise.
    * - CapacityReservationStatus
      - string
-     - Always ``null``.
+     - ``Used`` for reserved packages (``RE``); ``null`` otherwise.
    * - ChargeCategory
      - string
      - Charge category. Fixed value ``Usage``.
@@ -302,7 +321,8 @@ fields:
      - Fixed value ``T-Systems International GmbH``.
    * - ListCost
      - number
-     - Always ``null`` (no list price source available).
+     - List cost in EUR. Currently equal to ``BilledCost`` (no separate
+       list price source is available).
    * - ListUnitPrice
      - number
      - Always ``null``.
@@ -361,18 +381,21 @@ fields:
        is ``null``.
    * - ServiceCategory
      - string
-     - Category of the consumed service, for example ``Compute`` or
-       ``Database``.
+     - FOCUS-mapped category of the consumed service, derived from the
+       product family or category; ``Other`` when no mapping applies.
    * - ServiceName
      - string
      - Name of the consumed product or service. Currently equal to
        ``ChargeDescription``.
    * - ServiceSubcategory
      - string
-     - Subcategory of the consumed service (product family).
+     - FOCUS-mapped subcategory of the consumed service, derived from the
+       product family or category; ``Other (Other)`` when no mapping
+       applies.
    * - SubAccountId
-     - integer
-     - Identifier of the contract the charge belongs to.
+     - string
+     - Identifier of the contract the charge belongs to, returned as a
+       string.
    * - SubAccountName
      - string
      - Name of the contract the charge belongs to.
@@ -390,8 +413,8 @@ The FOCUS 1.1 columns ``SkuId``, ``SkuMeter``, ``SkuPriceId`` and
 ``SkuPriceDetails`` are not returned because no corresponding source
 data is available.
 
-Response Example (converted to JSON from byte string)
------------------------------------------------------
+Response Example (default NDJSON, converted from byte string)
+-------------------------------------------------------------
 
 .. literalinclude:: examples/consumption-get-focus-response.json
    :language: javascript
@@ -399,7 +422,9 @@ Response Example (converted to JSON from byte string)
 Python Example
 --------------
 
-Example showing how to stream and parse the response in Python:
+Example showing how to stream and parse the default NDJSON response in
+Python. For ``format=json``, decode the whole response with ``response.json()``;
+for ``format=csv``, parse it with ``csv.DictReader``:
 
 .. literalinclude:: examples/consumption-get-focus.py
    :language: python

@@ -23,6 +23,17 @@ date:
   in: query
   required: false
   type: string
+format:
+  description: |
+    Response format for the FOCUS 1.1 daily endpoint. ``ndjson`` (default)
+    returns one JSON object per line with content type
+    ``application/x-ndjson``; ``json`` returns a single JSON array with
+    content type ``application/json``; ``csv`` returns CSV with a header
+    row and content type ``text/csv``. Nested values in CSV are JSON
+    strings and ``null`` values are empty cells.
+  in: query
+  required: false
+  type: string
 hour:
   description: |
     To filter based on Hour of the day (0-23).
