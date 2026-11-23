@@ -419,12 +419,22 @@ Response Example (default NDJSON, converted from byte string)
 .. literalinclude:: examples/consumption-get-focus-response.json
    :language: javascript
 
-Python Example
---------------
+Python Examples
+---------------
 
-Example showing how to stream and parse the default NDJSON response in
-Python. For ``format=json``, decode the whole response with ``response.json()``;
-for ``format=csv``, parse it with ``csv.DictReader``:
+Default NDJSON response. Each line is a complete JSON object and can be
+parsed as it arrives:
 
 .. literalinclude:: examples/consumption-get-focus.py
+   :language: python
+
+``format=json`` response. The whole array is buffered by ``response.json()``:
+
+.. literalinclude:: examples/consumption-get-focus-json.py
+   :language: python
+
+``format=csv`` response. The first row contains the column names, nested
+values are JSON strings, and ``null`` values are empty cells:
+
+.. literalinclude:: examples/consumption-get-focus-csv.py
    :language: python
