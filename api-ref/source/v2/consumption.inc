@@ -321,11 +321,13 @@ Each charge has the following FOCUS 1.1 fields:
      - Fixed value ``T-Systems International GmbH``.
    * - ListCost
      - number
-     - List cost in EUR. Currently equal to ``BilledCost`` (no separate
-       list price source is available).
+     - List cost in EUR. Calculated as ``ListUnitPrice * PricingQuantity``
+       when a product list unit price is available, otherwise equal to
+       ``BilledCost``.
    * - ListUnitPrice
      - number
-     - Always ``null``.
+     - List unit price in EUR from the active EU-DE product price plan,
+       when available; ``null`` otherwise.
    * - PricingCategory
      - string
      - ``Committed`` for reserved packages (``RE``), ``Standard`` for
@@ -344,8 +346,9 @@ Each charge has the following FOCUS 1.1 fields:
        column.
    * - PricingCurrencyListUnitPrice
      - number
-     - Always ``null``. Informational extension, not a FOCUS 1.1
-       column.
+     - Same as ``ListUnitPrice`` when a product list unit price is
+       available, otherwise ``null``. Informational extension, not a
+       FOCUS 1.1 column.
    * - PricingQuantity
      - number
      - Priced quantity of the charge. Currently equal to
@@ -365,7 +368,8 @@ Each charge has the following FOCUS 1.1 fields:
      - Region where the service was consumed, for example ``EU-DE``.
    * - RegionName
      - string
-     - Region name. Currently equal to ``RegionId``.
+     - Human-readable region name, for example ``Germany``. Falls back
+       to ``RegionId`` when no mapping is available.
    * - ResourceId
      - string
      - Unique identifier of the resource. ``null`` when the charge is
@@ -392,6 +396,21 @@ Each charge has the following FOCUS 1.1 fields:
      - FOCUS-mapped subcategory of the consumed service, derived from the
        product family or category; ``Other (Other)`` when no mapping
        applies.
+   * - SkuId
+     - string
+     - Cloud billing catalogue/product identifier, when available;
+       ``null`` otherwise.
+   * - SkuMeter
+     - string
+     - Unit of measure for the SKU, derived from ``quantity_type``;
+       ``null`` otherwise.
+   * - SkuPriceDetails
+     - string
+     - Always ``null`` (not populated yet).
+   * - SkuPriceId
+     - string
+     - Active EU-DE price plan external key, when available; ``null``
+       otherwise.
    * - SubAccountId
      - string
      - Identifier of the contract the charge belongs to, returned as a
@@ -408,10 +427,6 @@ Each charge has the following FOCUS 1.1 fields:
      - All tags attached to the resource as a single JSON object.
        Only returned when ``show_tag=true`` is requested and the
        resource is tagged; ``null`` otherwise.
-
-The FOCUS 1.1 columns ``SkuId``, ``SkuMeter``, ``SkuPriceId`` and
-``SkuPriceDetails`` are not returned because no corresponding source
-data is available.
 
 Response Example (default NDJSON, converted from byte string)
 -------------------------------------------------------------
