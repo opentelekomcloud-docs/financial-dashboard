@@ -260,7 +260,9 @@ Each charge has the following FOCUS 1.1 fields:
      - ``Used`` for reserved packages (``RE``); ``null`` otherwise.
    * - ChargeCategory
      - string
-     - Charge category. Fixed value ``Usage``.
+     - Mapped from ``consumption_type``: ``EL`` -> ``Usage``,
+       ``OTF`` -> ``Purchase``, ``RC`` -> ``Purchase``. Unknown types
+       default to ``Usage``. RC classification should be confirmed.
    * - ChargeClass
      - string
      - Always ``null``.
@@ -269,7 +271,9 @@ Each charge has the following FOCUS 1.1 fields:
      - Description of the consumed product or service.
    * - ChargeFrequency
      - string
-     - Charge frequency. Fixed value ``Usage-Based``.
+     - Mapped from ``consumption_type``: ``EL`` -> ``Usage-Based``,
+       ``OTF`` -> ``One-Time``, ``RC`` -> ``Recurring``. Unknown types
+       default to ``Usage-Based``. RC classification should be confirmed.
    * - ChargePeriodEnd
      - string
      - End of the charge period. Exclusive (consumption day + 1 day
