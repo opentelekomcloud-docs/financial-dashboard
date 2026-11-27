@@ -6,7 +6,3 @@ curl -X GET "https://api-enterprise-dashboard.otc-service.com/v2/daily/consumpti
 # Single JSON array response
 curl -X GET "https://api-enterprise-dashboard.otc-service.com/v2/daily/consumption/focus?date=2025-02-02&contract=1000012345&format=json" \
   -H "Authorization: Bearer <YOUR_TOKEN_HERE>"
-
-# CSV response with a header row
-curl -X GET "https://api-enterprise-dashboard.otc-service.com/v2/daily/consumption/focus?date=2025-02-02&contract=1000012345&format=csv" \
-  -H "Authorization: Bearer <YOUR_TOKEN_HERE>"

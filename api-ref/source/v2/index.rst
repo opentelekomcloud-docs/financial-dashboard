@@ -29,7 +29,7 @@ endpoints, except the Health and Version Endpoints, require Authentication.
 
 Important: The "v2" API streams data without pagination for efficient bulk
 data response. The daily and hourly consumption endpoints return NDJSON. The
-daily FOCUS endpoint also supports JSON and CSV responses through the
+daily FOCUS endpoint also supports JSON and NDJSON responses through the
 ``format`` query parameter.
 
 .. image:: /images/image3.png
