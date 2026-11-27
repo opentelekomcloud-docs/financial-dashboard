@@ -7,7 +7,7 @@ This API streams your consumption data in batches of 1,000 records. The response
 
 Please ensure you create an API Key either through the Financial Dashboard UI or via the Grafana API directly.
 
-Note: API uses 'Europe/Berlin' as default timezone for parameters and response. If the same request is made with identical parameters within 1 hour, cached data will be returned instead of fresh data.
+Note: API uses 'Europe/Berlin' as default timezone for parameters. Time-related response fields use Europe/Berlin boundaries and are returned as FOCUS-compliant ISO 8601 UTC (`Z`). If the same request is made with identical parameters within 1 hour, cached data will be returned instead of fresh data.
 
 .. rest_status_code:: success ../http-status.yaml
 
@@ -73,7 +73,7 @@ This API streams your consumption data in batches of 1,000 records. The response
 
 Please ensure you create an API Key either through the Financial Dashboard UI or via the Grafana API directly.
 
-Note: API uses 'Europe/Berlin' as default timezone for parameters and response. If the same request is made with identical parameters within 1 hour, cached data will be returned instead of fresh data.
+Note: API uses 'Europe/Berlin' as default timezone for parameters. Time-related response fields use Europe/Berlin boundaries and are returned as FOCUS-compliant ISO 8601 UTC (`Z`). If the same request is made with identical parameters within 1 hour, cached data will be returned instead of fresh data.
 
 .. rest_status_code:: success ../http-status.yaml
 
@@ -139,17 +139,31 @@ This API streams your consumption data aligned to the `FOCUS 1.1
 column names at daily granularity. The same filters as the daily
 consumption endpoint are supported.
 
-The response is returned as a string (NDJSON), with each line
-representing a valid JSON object. Data is streamed in batches of 1,000
-records. You'll need to decode each line and parse it into JSON format
-on your end.
+The response format is selected with the ``format`` query parameter:
+
+.. list-table::
+   :widths: 18 30 52
+   :header-rows: 1
+
+   * - ``format``
+     - Content type
+     - Description
+   * - ``ndjson``
+     - ``application/x-ndjson``
+     - Default; one JSON object per line.
+   * - ``json``
+     - ``application/json``
+     - A single JSON array of objects.
+
+Data is streamed in batches of 1,000 records.
 
 Please ensure you create an API Key either through the Financial
 Dashboard UI or via the Grafana API directly.
 
-Note: API uses 'Europe/Berlin' as default timezone for parameters and
-response. If the same request is made with identical parameters within
-1 hour, cached data will be returned instead of fresh data.
+Note: API uses 'Europe/Berlin' as default timezone for parameters.
+Time-related response fields use Europe/Berlin boundaries and are
+returned as FOCUS-compliant ISO 8601 UTC (`Z`). If the same request is made with identical
+parameters within 1 hour, cached data will be returned instead of fresh data.
 
 Note: The ``show_tag``, ``tag_key`` and ``tag_value`` filters require the
 ``contract`` parameter to be set as well.
@@ -171,6 +185,7 @@ Request
    - consumption_type: consumption_type
    - contract: contract
    - date: date
+   - format: format
    - month: month
    - product: product
    - product_description: product_description
@@ -185,7 +200,7 @@ Request
 Curl Example
 ------------
 
-Example request using curl with query parameters and headers:
+Example requests using curl with query parameters and headers:
 
 .. literalinclude:: examples/consumption-focus-get-curl
    :language: bash
@@ -193,8 +208,7 @@ Example request using curl with query parameters and headers:
 Response Parameters
 -------------------
 
-Each response line contains one charge with the following FOCUS 1.1
-fields:
+Each charge has the following FOCUS 1.1 fields:
 
 .. list-table::
    :widths: 25 12 63
@@ -211,9 +225,9 @@ fields:
      - number
      - Billed cost of the charge in the billing currency (EUR).
    * - BillingAccountId
-     - integer
+     - string
      - Identifier of the billing (payer) account the contract belongs
-       to.
+       to, returned as a string.
    * - BillingAccountName
      - string
      - Name of the billing (payer) account the contract belongs to.
@@ -226,22 +240,26 @@ fields:
      - Billing currency. Fixed value ``EUR``.
    * - BillingPeriodEnd
      - string
-     - End of the billing period covered by the charge. Exclusive.
-       Currently describes the daily period (consumption day + 1 day).
+     - Exclusive end of the billing period covered by the charge.
+       Europe/Berlin calendar month boundary, returned as FOCUS-compliant
+       ISO 8601 UTC (e.g. ``2026-06-30T22:00:00Z`` for a CEST boundary).
    * - BillingPeriodStart
      - string
-     - Start of the billing period covered by the charge (the
-       consumption day).
+     - Inclusive start of the billing period covered by the charge.
+       Europe/Berlin calendar month boundary, returned as FOCUS-compliant
+       ISO 8601 UTC (e.g. ``2026-05-31T22:00:00Z`` for a CEST boundary).
    * - CapacityReservationId
      - string
      - Resource identifier for reserved package (``RE``) charges;
        ``null`` otherwise.
    * - CapacityReservationStatus
      - string
-     - Always ``null``.
+     - ``Used`` for reserved packages (``RE``); ``null`` otherwise.
    * - ChargeCategory
      - string
-     - Charge category. Fixed value ``Usage``.
+     - Mapped from ``consumption_type``: ``EL`` -> ``Usage``,
+       ``OTF`` -> ``Purchase``, ``RC`` -> ``Purchase``. Unknown types
+       default to ``Usage``. RC classification should be confirmed.
    * - ChargeClass
      - string
      - Always ``null``.
@@ -250,14 +268,17 @@ fields:
      - Description of the consumed product or service.
    * - ChargeFrequency
      - string
-     - Charge frequency. Fixed value ``Usage-Based``.
+     - Mapped from ``consumption_type``: ``EL`` -> ``Usage-Based``,
+       ``OTF`` -> ``One-Time``, ``RC`` -> ``Recurring``. Unknown types
+       default to ``Usage-Based``. RC classification should be confirmed.
    * - ChargePeriodEnd
      - string
-     - End of the charge period. Exclusive (consumption day + 1 day
-       at daily granularity).
+     - Exclusive end of the charge period. Europe/Berlin day boundary
+       (consumption day + 1 day), returned as FOCUS-compliant ISO 8601 UTC (`Z`).
    * - ChargePeriodStart
      - string
-     - Start of the charge period (the consumption day).
+     - Inclusive start of the charge period. Europe/Berlin day boundary
+       (consumption day), returned as FOCUS-compliant ISO 8601 UTC (`Z`).
    * - CommitmentDiscountCategory
      - string
      - Always ``null`` (no commitment data available).
@@ -302,10 +323,13 @@ fields:
      - Fixed value ``T-Systems International GmbH``.
    * - ListCost
      - number
-     - Always ``null`` (no list price source available).
+     - List cost in EUR. Calculated as ``ListUnitPrice * PricingQuantity``
+       when a product list unit price is available, otherwise equal to
+       ``BilledCost``.
    * - ListUnitPrice
      - number
-     - Always ``null``.
+     - List unit price in EUR from the active EU-DE product price plan,
+       when available; ``null`` otherwise.
    * - PricingCategory
      - string
      - ``Committed`` for reserved packages (``RE``), ``Standard`` for
@@ -324,8 +348,9 @@ fields:
        column.
    * - PricingCurrencyListUnitPrice
      - number
-     - Always ``null``. Informational extension, not a FOCUS 1.1
-       column.
+     - Same as ``ListUnitPrice`` when a product list unit price is
+       available, otherwise ``null``. Informational extension, not a
+       FOCUS 1.1 column.
    * - PricingQuantity
      - number
      - Priced quantity of the charge. Currently equal to
@@ -345,7 +370,8 @@ fields:
      - Region where the service was consumed, for example ``EU-DE``.
    * - RegionName
      - string
-     - Region name. Currently equal to ``RegionId``.
+     - Human-readable region name, for example ``Germany``. Falls back
+       to ``RegionId`` when no mapping is available.
    * - ResourceId
      - string
      - Unique identifier of the resource. ``null`` when the charge is
@@ -361,18 +387,36 @@ fields:
        is ``null``.
    * - ServiceCategory
      - string
-     - Category of the consumed service, for example ``Compute`` or
-       ``Database``.
+     - FOCUS-mapped category of the consumed service, derived from the
+       product family or category; ``Other`` when no mapping applies.
    * - ServiceName
      - string
      - Name of the consumed product or service. Currently equal to
        ``ChargeDescription``.
    * - ServiceSubcategory
      - string
-     - Subcategory of the consumed service (product family).
+     - FOCUS-mapped subcategory of the consumed service, derived from the
+       product family or category; ``Other (Other)`` when no mapping
+       applies.
+   * - SkuId
+     - string
+     - Cloud billing catalogue/product identifier, when available;
+       ``null`` otherwise.
+   * - SkuMeter
+     - string
+     - Unit of measure for the SKU, derived from ``quantity_type``;
+       ``null`` otherwise.
+   * - SkuPriceDetails
+     - string
+     - Always ``null`` (not populated yet).
+   * - SkuPriceId
+     - string
+     - Active EU-DE price plan external key, when available; ``null``
+       otherwise.
    * - SubAccountId
-     - integer
-     - Identifier of the contract the charge belongs to.
+     - string
+     - Identifier of the contract the charge belongs to, returned as a
+       string.
    * - SubAccountName
      - string
      - Name of the contract the charge belongs to.
@@ -386,20 +430,22 @@ fields:
        Only returned when ``show_tag=true`` is requested and the
        resource is tagged; ``null`` otherwise.
 
-The FOCUS 1.1 columns ``SkuId``, ``SkuMeter``, ``SkuPriceId`` and
-``SkuPriceDetails`` are not returned because no corresponding source
-data is available.
-
-Response Example (converted to JSON from byte string)
------------------------------------------------------
+Response Example (default NDJSON, converted from byte string)
+-------------------------------------------------------------
 
 .. literalinclude:: examples/consumption-get-focus-response.json
    :language: javascript
 
-Python Example
---------------
+Python Examples
+---------------
 
-Example showing how to stream and parse the response in Python:
+Default NDJSON response. Each line is a complete JSON object and can be
+parsed as it arrives:
 
 .. literalinclude:: examples/consumption-get-focus.py
+   :language: python
+
+``format=json`` response. The whole array is buffered by ``response.json()``:
+
+.. literalinclude:: examples/consumption-get-focus-json.py
    :language: python
