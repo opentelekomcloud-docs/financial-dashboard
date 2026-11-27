@@ -7,7 +7,7 @@ This API streams your consumption data in batches of 1,000 records. The response
 
 Please ensure you create an API Key either through the Financial Dashboard UI or via the Grafana API directly.
 
-Note: API uses 'Europe/Berlin' as default timezone for parameters. Time-related response fields are returned as ISO 8601 with Europe/Berlin timezone offset. If the same request is made with identical parameters within 1 hour, cached data will be returned instead of fresh data.
+Note: API uses 'Europe/Berlin' as default timezone for parameters. Time-related response fields use Europe/Berlin boundaries and are returned as FOCUS-compliant ISO 8601 UTC (`Z`). If the same request is made with identical parameters within 1 hour, cached data will be returned instead of fresh data.
 
 .. rest_status_code:: success ../http-status.yaml
 
@@ -73,7 +73,7 @@ This API streams your consumption data in batches of 1,000 records. The response
 
 Please ensure you create an API Key either through the Financial Dashboard UI or via the Grafana API directly.
 
-Note: API uses 'Europe/Berlin' as default timezone for parameters. Time-related response fields are returned as ISO 8601 with Europe/Berlin timezone offset. If the same request is made with identical parameters within 1 hour, cached data will be returned instead of fresh data.
+Note: API uses 'Europe/Berlin' as default timezone for parameters. Time-related response fields use Europe/Berlin boundaries and are returned as FOCUS-compliant ISO 8601 UTC (`Z`). If the same request is made with identical parameters within 1 hour, cached data will be returned instead of fresh data.
 
 .. rest_status_code:: success ../http-status.yaml
 
@@ -161,8 +161,8 @@ Please ensure you create an API Key either through the Financial
 Dashboard UI or via the Grafana API directly.
 
 Note: API uses 'Europe/Berlin' as default timezone for parameters.
-Time-related response fields are returned as ISO 8601 with
-Europe/Berlin timezone offset. If the same request is made with identical
+Time-related response fields use Europe/Berlin boundaries and are
+returned as FOCUS-compliant ISO 8601 UTC (`Z`). If the same request is made with identical
 parameters within 1 hour, cached data will be returned instead of fresh data.
 
 Note: The ``show_tag``, ``tag_key`` and ``tag_value`` filters require the
@@ -241,13 +241,13 @@ Each charge has the following FOCUS 1.1 fields:
    * - BillingPeriodEnd
      - string
      - Exclusive end of the billing period covered by the charge.
-       Europe/Berlin calendar month boundary, returned as ISO 8601 with
-       timezone offset (e.g. ``2026-07-01T00:00:00+02:00``).
+       Europe/Berlin calendar month boundary, returned as FOCUS-compliant
+       ISO 8601 UTC (e.g. ``2026-06-30T22:00:00Z`` for a CEST boundary).
    * - BillingPeriodStart
      - string
      - Inclusive start of the billing period covered by the charge.
-       Europe/Berlin calendar month boundary, returned as ISO 8601 with
-       timezone offset (e.g. ``2026-06-01T00:00:00+02:00``).
+       Europe/Berlin calendar month boundary, returned as FOCUS-compliant
+       ISO 8601 UTC (e.g. ``2026-05-31T22:00:00Z`` for a CEST boundary).
    * - CapacityReservationId
      - string
      - Resource identifier for reserved package (``RE``) charges;
@@ -274,12 +274,11 @@ Each charge has the following FOCUS 1.1 fields:
    * - ChargePeriodEnd
      - string
      - Exclusive end of the charge period. Europe/Berlin day boundary
-       (consumption day + 1 day), returned as ISO 8601 with timezone
-       offset.
+       (consumption day + 1 day), returned as FOCUS-compliant ISO 8601 UTC (`Z`).
    * - ChargePeriodStart
      - string
      - Inclusive start of the charge period. Europe/Berlin day boundary
-       (consumption day), returned as ISO 8601 with timezone offset.
+       (consumption day), returned as FOCUS-compliant ISO 8601 UTC (`Z`).
    * - CommitmentDiscountCategory
      - string
      - Always ``null`` (no commitment data available).
