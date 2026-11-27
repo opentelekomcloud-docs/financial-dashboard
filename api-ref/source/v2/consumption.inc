@@ -7,7 +7,7 @@ This API streams your consumption data in batches of 1,000 records. The response
 
 Please ensure you create an API Key either through the Financial Dashboard UI or via the Grafana API directly.
 
-Note: API uses 'Europe/Berlin' as default timezone for parameters and response. If the same request is made with identical parameters within 1 hour, cached data will be returned instead of fresh data.
+Note: API uses 'Europe/Berlin' as default timezone for parameters. Time-related response fields are returned as ISO 8601 with Europe/Berlin timezone offset. If the same request is made with identical parameters within 1 hour, cached data will be returned instead of fresh data.
 
 .. rest_status_code:: success ../http-status.yaml
 
@@ -73,7 +73,7 @@ This API streams your consumption data in batches of 1,000 records. The response
 
 Please ensure you create an API Key either through the Financial Dashboard UI or via the Grafana API directly.
 
-Note: API uses 'Europe/Berlin' as default timezone for parameters and response. If the same request is made with identical parameters within 1 hour, cached data will be returned instead of fresh data.
+Note: API uses 'Europe/Berlin' as default timezone for parameters. Time-related response fields are returned as ISO 8601 with Europe/Berlin timezone offset. If the same request is made with identical parameters within 1 hour, cached data will be returned instead of fresh data.
 
 .. rest_status_code:: success ../http-status.yaml
 
@@ -160,9 +160,10 @@ Data is streamed in batches of 1,000 records.
 Please ensure you create an API Key either through the Financial
 Dashboard UI or via the Grafana API directly.
 
-Note: API uses 'Europe/Berlin' as default timezone for parameters and
-response. If the same request is made with identical parameters within
-1 hour, cached data will be returned instead of fresh data.
+Note: API uses 'Europe/Berlin' as default timezone for parameters.
+Time-related response fields are returned as ISO 8601 with
+Europe/Berlin timezone offset. If the same request is made with identical
+parameters within 1 hour, cached data will be returned instead of fresh data.
 
 Note: The ``show_tag``, ``tag_key`` and ``tag_value`` filters require the
 ``contract`` parameter to be set as well.
@@ -239,14 +240,14 @@ Each charge has the following FOCUS 1.1 fields:
      - Billing currency. Fixed value ``EUR``.
    * - BillingPeriodEnd
      - string
-     - Exclusive end of the billing period covered by the charge. UTC
-       calendar month boundary, ISO 8601 UTC (e.g.
-       ``2026-07-01T00:00:00Z``).
+     - Exclusive end of the billing period covered by the charge.
+       Europe/Berlin calendar month boundary, returned as ISO 8601 with
+       timezone offset (e.g. ``2026-07-01T00:00:00+02:00``).
    * - BillingPeriodStart
      - string
-     - Inclusive start of the billing period covered by the charge. UTC
-       calendar month boundary, ISO 8601 UTC (e.g.
-       ``2026-06-01T00:00:00Z``).
+     - Inclusive start of the billing period covered by the charge.
+       Europe/Berlin calendar month boundary, returned as ISO 8601 with
+       timezone offset (e.g. ``2026-06-01T00:00:00+02:00``).
    * - CapacityReservationId
      - string
      - Resource identifier for reserved package (``RE``) charges;
@@ -272,11 +273,13 @@ Each charge has the following FOCUS 1.1 fields:
        default to ``Usage-Based``. RC classification should be confirmed.
    * - ChargePeriodEnd
      - string
-     - End of the charge period. Exclusive (consumption day + 1 day
-       at daily granularity).
+     - Exclusive end of the charge period. Europe/Berlin day boundary
+       (consumption day + 1 day), returned as ISO 8601 with timezone
+       offset.
    * - ChargePeriodStart
      - string
-     - Start of the charge period (the consumption day).
+     - Inclusive start of the charge period. Europe/Berlin day boundary
+       (consumption day), returned as ISO 8601 with timezone offset.
    * - CommitmentDiscountCategory
      - string
      - Always ``null`` (no commitment data available).
