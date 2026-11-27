@@ -1,7 +1,7 @@
-  {
+{
     "aggregation_id": "6695b30b94bcea55c2d7703b",
     "amount": 0.036312,
-    "consumption_date": "2024-07-16T00:00:00+01:00",
+    "consumption_date": "2024-07-15T23:00:00Z",
     "consumption_type": "EL",
     "contract": 1000012345,
     "product": "OTC_KMS_UD_C",
@@ -12,4 +12,4 @@
     "region": "EU-DE",
     "resource_id": "3eaf12bc-9f70-4e33-849b-fe9cd0de3d36",
     "status": "NEW"
-  }
+}

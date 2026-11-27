@@ -1,8 +1,8 @@
-  {
+{
     "amount": 2.5867339103034e-06,
     "amount_excluding_discount": 2.5867339103034e-06,
     "bill_cycle_day": 1,
-    "consumption_date": "2024-08-02T00:00:00+01:00",
+    "consumption_date": "2024-08-01T23:00:00Z",
     "consumption_type": "EL",
     "contract": 1000012345,
     "external_priceplan": "pp_OTC_RDS_BK_SP_EU-DE",
@@ -15,4 +15,4 @@
     "resource_id": "aa0b059b6f124c9c865a2ba8686c8d11in04.obs",
     "status": "AGGREGATION_PROCESSED",
     "usage_id": "66ac1cfa23b0566fec369b19"
-  }
+}
