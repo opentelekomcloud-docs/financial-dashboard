@@ -154,10 +154,6 @@ The response format is selected with the ``format`` query parameter:
    * - ``json``
      - ``application/json``
      - A single JSON array of objects.
-   * - ``csv``
-     - ``text/csv``
-     - CSV with a header row; nested values are JSON strings and
-       ``null`` values are empty cells.
 
 Data is streamed in batches of 1,000 records.
 
@@ -243,14 +239,14 @@ Each charge has the following FOCUS 1.1 fields:
      - Billing currency. Fixed value ``EUR``.
    * - BillingPeriodEnd
      - string
-     - Exclusive end of the billing period covered by the charge. This
-       is the start of the calendar month following the consumption
-       month.
+     - Exclusive end of the billing period covered by the charge. UTC
+       calendar month boundary, ISO 8601 UTC (e.g.
+       ``2026-07-01T00:00:00Z``).
    * - BillingPeriodStart
      - string
-     - Inclusive start of the billing period covered by the charge. This
-       is the start of the calendar month containing the consumption
-       date.
+     - Inclusive start of the billing period covered by the charge. UTC
+       calendar month boundary, ISO 8601 UTC (e.g.
+       ``2026-06-01T00:00:00Z``).
    * - CapacityReservationId
      - string
      - Resource identifier for reserved package (``RE``) charges;
@@ -450,10 +446,4 @@ parsed as it arrives:
 ``format=json`` response. The whole array is buffered by ``response.json()``:
 
 .. literalinclude:: examples/consumption-get-focus-json.py
-   :language: python
-
-``format=csv`` response. The first row contains the column names, nested
-values are JSON strings, and ``null`` values are empty cells:
-
-.. literalinclude:: examples/consumption-get-focus-csv.py
    :language: python
